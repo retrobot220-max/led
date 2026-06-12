@@ -1,12 +1,5 @@
 import { useState } from 'react'
-import {
-  ConfigProvider,
-  theme,
-  Button,
-  InputNumber,
-  Switch,
-  Collapse,
-} from 'antd'
+import { ConfigProvider, theme, Button, InputNumber, Collapse } from 'antd'
 import {
   PlusOutlined,
   MinusOutlined,
