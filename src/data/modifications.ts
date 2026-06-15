@@ -142,14 +142,6 @@ export const modificationCollection: ModificationItem[] = [
     upgrade_price: 200,
     type: 'unique',
   },
-  {
-    name: ModificationNamespace.lucky_clover,
-    title: 'Фартанутый клевер',
-    purchase_price: null,
-    sale_price: null,
-    upgrade_price: null,
-    type: 'bunker',
-  },
 ]
 
 export const modificationTypeLabels: Record<string, string> = {

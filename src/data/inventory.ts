@@ -41,7 +41,7 @@ export const inventoryTypeLabels: Record<string, string> = {
   food: 'Еда',
   medicine: 'Медицина',
   grenade: 'Граната',
-  fish: 'Рбыа',
+  fish: 'Еда',
 }
 
 export const inventoryTypeColors: Record<string, string> = {

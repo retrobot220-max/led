@@ -14,6 +14,11 @@ interface Props {
   onSelect: (item: InventoryItem) => void
 }
 
+// Сортируем один раз вне компонента, чтобы не пересчитывать при каждом рендере
+const sortedInventoryCollection = [...inventoryCollection].sort((a, b) =>
+  a.type.localeCompare(b.type),
+)
+
 export const AddInventoryModal = ({ open, onClose, onSelect }: Props) => {
   return (
     <Modal
@@ -24,7 +29,7 @@ export const AddInventoryModal = ({ open, onClose, onSelect }: Props) => {
       destroyOnHidden
     >
       <Row gutter={[12, 12]}>
-        {inventoryCollection.map((item) => {
+        {sortedInventoryCollection.map((item) => {
           const Icon = inventoryItemIcons[item.name]
           return (
             <Col key={item.name} xs={12} sm={8} md={6}>

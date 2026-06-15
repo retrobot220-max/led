@@ -14,6 +14,10 @@ interface Props {
   onSelect: (item: ModificationItem) => void
 }
 
+const sortedModificationCollection = [...modificationCollection].sort((a, b) =>
+  a.type.localeCompare(b.type),
+)
+
 export const AddModificationModal = ({ open, onClose, onSelect }: Props) => {
   return (
     <Modal
@@ -24,7 +28,7 @@ export const AddModificationModal = ({ open, onClose, onSelect }: Props) => {
       destroyOnHidden
     >
       <Row gutter={[12, 12]}>
-        {modificationCollection.map((item) => {
+        {sortedModificationCollection.map((item) => {
           const Icon = modificationItemIcons[item.name]
           return (
             <Col key={item.name} xs={12} sm={8} md={6}>
