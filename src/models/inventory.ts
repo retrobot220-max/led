@@ -11,12 +11,15 @@ export const InventoryNamespace = {
   frag_grenade: 'frag_grenade',
   cryogen_grenade: 'cryogen_grenade',
   portal_grenade: 'portal_grenade',
+  common_fish: 'common_fish',
+  rare_fish: 'rare_fish',
+  legendary_fish: 'legendary_fish',
 } as const
 
 export type InventoryNamespace =
   (typeof InventoryNamespace)[keyof typeof InventoryNamespace]
 
-export type InventoryType = 'food' | 'medicine' | 'grenade'
+export type InventoryType = 'food' | 'medicine' | 'grenade' | 'fish'
 
 export interface InventoryItem {
   name: InventoryNamespace

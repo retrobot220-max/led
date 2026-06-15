@@ -119,8 +119,10 @@ export default function App() {
   const [health, setHealth] = useState(10)
   const [armor, setArmor] = useState(0)
   const [exp, setExp] = useState(0)
+  const [food, setFood] = useState(0)
   const [money, setMoney] = useState(0)
   const [junk, setJunk] = useState(0)
+  const [stamina, setStamina] = useState(0)
 
   const [inventory, setInventory] = useState<(InventoryItem | null)[]>(
     Array(INVENTORY_SLOTS).fill(null),
@@ -225,6 +227,18 @@ export default function App() {
               value={exp}
               steps={[1, 5]}
               onChange={setExp}
+            />
+            <Counter
+              label='Сытость'
+              value={food}
+              steps={[1, 2]}
+              onChange={setFood}
+            />
+            <Counter
+              label='Выносливость'
+              value={stamina}
+              steps={[1, 2]}
+              onChange={setStamina}
             />
             <Counter
               label='Деньги'

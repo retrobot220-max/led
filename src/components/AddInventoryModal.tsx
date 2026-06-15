@@ -1,4 +1,4 @@
-import { Modal, List, Tag } from 'antd'
+import { Modal, Row, Col, Tag } from 'antd'
 import {
   inventoryCollection,
   inventoryItemIcons,
@@ -23,18 +23,17 @@ export const AddInventoryModal = ({ open, onClose, onSelect }: Props) => {
       title='Добавить предмет'
       destroyOnHidden
     >
-      <List
-        dataSource={inventoryCollection}
-        grid={{ gutter: 12, xs: 2, sm: 3, md: 4 }}
-        renderItem={(item) => {
+      <Row gutter={[12, 12]}>
+        {inventoryCollection.map((item) => {
           const Icon = inventoryItemIcons[item.name]
           return (
-            <List.Item>
+            <Col key={item.name} xs={12} sm={8} md={6}>
               <ModalIconWrap
                 onClick={() => {
                   onSelect(item)
                   onClose()
                 }}
+                style={{ height: '100%' }}
               >
                 <Icon className='slot-icon' />
                 <span className='slot-title'>{item.title}</span>
@@ -42,10 +41,10 @@ export const AddInventoryModal = ({ open, onClose, onSelect }: Props) => {
                   {inventoryTypeLabels[item.type]}
                 </Tag>
               </ModalIconWrap>
-            </List.Item>
+            </Col>
           )
-        }}
-      />
+        })}
+      </Row>
     </Modal>
   )
 }

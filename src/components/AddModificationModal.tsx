@@ -1,4 +1,4 @@
-import { Modal, List, Tag } from 'antd'
+import { Modal, Row, Col, Tag } from 'antd'
 import {
   modificationCollection,
   modificationItemIcons,
@@ -23,18 +23,17 @@ export const AddModificationModal = ({ open, onClose, onSelect }: Props) => {
       title='Добавить модификацию'
       destroyOnHidden
     >
-      <List
-        dataSource={modificationCollection}
-        grid={{ gutter: 12, xs: 2, sm: 3, md: 4 }}
-        renderItem={(item) => {
+      <Row gutter={[12, 12]}>
+        {modificationCollection.map((item) => {
           const Icon = modificationItemIcons[item.name]
           return (
-            <List.Item>
+            <Col key={item.name} xs={12} sm={8} md={6}>
               <ModalIconWrap
                 onClick={() => {
                   onSelect(item)
                   onClose()
                 }}
+                style={{ height: '100%' }}
               >
                 <Icon className='slot-icon' />
                 <span className='slot-title'>{item.title}</span>
@@ -42,10 +41,10 @@ export const AddModificationModal = ({ open, onClose, onSelect }: Props) => {
                   {modificationTypeLabels[item.type]}
                 </Tag>
               </ModalIconWrap>
-            </List.Item>
+            </Col>
           )
-        }}
-      />
+        })}
+      </Row>
     </Modal>
   )
 }

@@ -155,7 +155,7 @@ export const modificationCollection: ModificationItem[] = [
 export const modificationTypeLabels: Record<string, string> = {
   fight: 'Боевая',
   survival: 'Выживание',
-  unique: 'Уникальная',
+  unique: 'Можно прокачать',
   bunker: 'Бункерная',
 }
 

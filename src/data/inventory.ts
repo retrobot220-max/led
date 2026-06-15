@@ -12,6 +12,9 @@ import IncendiaryGrenadeIcon from '../assets/inventory/incendiary_grenade.svg?re
 import FragGrenadeIcon from '../assets/inventory/frag_grenade.svg?react'
 import CryogenGrenadeIcon from '../assets/inventory/cryogen_grenade.svg?react'
 import PortalGrenadeIcon from '../assets/inventory/portal_grenade.svg?react'
+import CommonFishIcon from '../assets/inventory/common_fish.svg?react'
+import RareFishIcon from '../assets/inventory/rare_fish.svg?react'
+import LegendaryFishIcon from '../assets/inventory/legendary_fish.svg?react'
 
 export const inventoryItemIcons: Record<
   InventoryNamespace,
@@ -29,18 +32,23 @@ export const inventoryItemIcons: Record<
   [InventoryNamespace.frag_grenade]: FragGrenadeIcon,
   [InventoryNamespace.cryogen_grenade]: CryogenGrenadeIcon,
   [InventoryNamespace.portal_grenade]: PortalGrenadeIcon,
+  common_fish: CommonFishIcon,
+  rare_fish: RareFishIcon,
+  legendary_fish: LegendaryFishIcon,
 }
 
 export const inventoryTypeLabels: Record<string, string> = {
   food: 'Еда',
   medicine: 'Медицина',
   grenade: 'Граната',
+  fish: 'Рбыа',
 }
 
 export const inventoryTypeColors: Record<string, string> = {
   food: '#fbbf24',
   medicine: '#4ade80',
   grenade: '#f87171',
+  fish: '#fbbf24',
 }
 
 export const inventoryCollection: InventoryItem[] = [
@@ -127,5 +135,26 @@ export const inventoryCollection: InventoryItem[] = [
     title: 'Телепортационная граната',
     purchase_price: 100,
     sale_price: 50,
+  },
+  {
+    name: InventoryNamespace.common_fish,
+    type: 'fish',
+    title: 'Обычная рыба',
+    purchase_price: 0,
+    sale_price: 50,
+  },
+  {
+    name: InventoryNamespace.rare_fish,
+    type: 'fish',
+    title: 'Редкая рыба',
+    purchase_price: 0,
+    sale_price: 100,
+  },
+  {
+    name: InventoryNamespace.legendary_fish,
+    type: 'fish',
+    title: 'Легендарная рыба',
+    purchase_price: 0,
+    sale_price: 200,
   },
 ]
