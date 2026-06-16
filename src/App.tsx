@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ConfigProvider, theme, Button, InputNumber, Collapse } from 'antd'
 import {
   PlusOutlined,
@@ -25,6 +25,25 @@ interface Companion {
   name: string
   health: number
   armor: number
+}
+
+function useLocalStorage<T>(key: string, initial: T) {
+  const [value, setValue] = useState<T>(() => {
+    try {
+      const raw = localStorage.getItem(key)
+      return raw !== null ? (JSON.parse(raw) as T) : initial
+    } catch {
+      return initial
+    }
+  })
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(key, JSON.stringify(value))
+    } catch {}
+  }, [key, value])
+
+  return [value, setValue] as const
 }
 
 // Переиспользуемый счётчик
@@ -116,28 +135,33 @@ function PipCounter({
 }
 
 export default function App() {
-  const [health, setHealth] = useState(10)
-  const [armor, setArmor] = useState(0)
-  const [exp, setExp] = useState(0)
-  const [food, setFood] = useState(0)
-  const [money, setMoney] = useState(0)
-  const [junk, setJunk] = useState(0)
-  const [stamina, setStamina] = useState(0)
+  const [health, setHealth] = useLocalStorage('hero.health', 10)
+  const [armor, setArmor] = useLocalStorage('hero.armor', 0)
+  const [exp, setExp] = useLocalStorage('hero.exp', 0)
+  const [food, setFood] = useLocalStorage('hero.food', 0)
+  const [money, setMoney] = useLocalStorage('hero.money', 0)
+  const [junk, setJunk] = useLocalStorage('hero.junk', 0)
+  const [stamina, setStamina] = useLocalStorage('hero.stamina', 0)
 
-  const [inventory, setInventory] = useState<(InventoryItem | null)[]>(
+  const [inventory, setInventory] = useLocalStorage<(InventoryItem | null)[]>(
+    'hero.inventory',
     Array(INVENTORY_SLOTS).fill(null),
   )
-  const [mods, setMods] = useState<(ModificationItem | null)[]>(
+  const [mods, setMods] = useLocalStorage<(ModificationItem | null)[]>(
+    'hero.mods',
     Array(MODIFICATION_SLOTS).fill(null),
   )
 
-  const [companions, setCompanions] = useState<Companion[]>([])
+  const [companions, setCompanions] = useLocalStorage<Companion[]>(
+    'hero.companions',
+    [],
+  )
 
-  const [greenSkulls, setGreenSkulls] = useState(0)
-  const [blueSkulls, setBlueSkulls] = useState(0)
-  const [rage, setRage] = useState(0)
+  const [greenSkulls, setGreenSkulls] = useLocalStorage('hero.greenSkulls', 0)
+  const [blueSkulls, setBlueSkulls] = useLocalStorage('hero.blueSkulls', 0)
+  const [rage, setRage] = useLocalStorage('hero.rage', 0)
 
-  // модалки
+  // модалки — не сохраняем в localStorage
   const [invModalOpen, setInvModalOpen] = useState(false)
   const [modModalOpen, setModModalOpen] = useState(false)
   const [activeInvSlot, setActiveInvSlot] = useState<number | null>(null)
