@@ -1,5 +1,12 @@
 import { useState, useEffect } from 'react'
-import { ConfigProvider, theme, Button, InputNumber, Collapse } from 'antd'
+import {
+  ConfigProvider,
+  theme,
+  Button,
+  InputNumber,
+  Collapse,
+  Switch,
+} from 'antd'
 import {
   PlusOutlined,
   MinusOutlined,
@@ -46,7 +53,6 @@ function useLocalStorage<T>(key: string, initial: T) {
   return [value, setValue] as const
 }
 
-// Переиспользуемый счётчик
 function Counter({
   label,
   value,
@@ -99,7 +105,6 @@ function Counter({
   )
 }
 
-// Счётчик "точками" (черепки, гнев)
 function PipCounter({
   label,
   value,
@@ -151,7 +156,6 @@ export default function App() {
     'hero.mods',
     Array(MODIFICATION_SLOTS).fill(null),
   )
-
   const [companions, setCompanions] = useLocalStorage<Companion[]>(
     'hero.companions',
     [],
@@ -161,11 +165,30 @@ export default function App() {
   const [blueSkulls, setBlueSkulls] = useLocalStorage('hero.blueSkulls', 0)
   const [rage, setRage] = useLocalStorage('hero.rage', 0)
 
-  // модалки — не сохраняем в localStorage
+  const [extraEnabled0, setExtraEnabled0] = useLocalStorage(
+    'hero.extraEnabled0',
+    false,
+  )
+  const [extraEnabled1, setExtraEnabled1] = useLocalStorage(
+    'hero.extraEnabled1',
+    false,
+  )
+  const [extraSlot0, setExtraSlot0] = useLocalStorage<InventoryItem | null>(
+    'hero.extraSlot0',
+    null,
+  )
+  const [extraSlot1, setExtraSlot1] = useLocalStorage<InventoryItem | null>(
+    'hero.extraSlot1',
+    null,
+  )
+
   const [invModalOpen, setInvModalOpen] = useState(false)
   const [modModalOpen, setModModalOpen] = useState(false)
   const [activeInvSlot, setActiveInvSlot] = useState<number | null>(null)
   const [activeModSlot, setActiveModSlot] = useState<number | null>(null)
+
+  const [activeExtraSlot, setActiveExtraSlot] = useState<0 | 1 | null>(null)
+  const [extraInvModalOpen, setExtraInvModalOpen] = useState(false)
 
   // ---- инвентарь ----
   const openInvSlot = (i: number) => {
@@ -187,6 +210,33 @@ export default function App() {
       next[i] = null
       return next
     })
+
+  // ---- доп. слоты ----
+  const handleToggle0 = (checked: boolean) => {
+    setExtraEnabled0(checked)
+    if (!checked) setExtraSlot0(null)
+  }
+  const handleToggle1 = (checked: boolean) => {
+    setExtraEnabled1(checked)
+    if (!checked) setExtraSlot1(null)
+  }
+
+  const openExtra0 = () => {
+    if (!extraEnabled0 || extraSlot0) return
+    setActiveExtraSlot(0)
+    setExtraInvModalOpen(true)
+  }
+  const openExtra1 = () => {
+    if (!extraEnabled1 || extraSlot1) return
+    setActiveExtraSlot(1)
+    setExtraInvModalOpen(true)
+  }
+
+  const selectExtraInv = (item: InventoryItem) => {
+    if (activeExtraSlot === 0) setExtraSlot0(item)
+    if (activeExtraSlot === 1) setExtraSlot1(item)
+    setExtraInvModalOpen(false)
+  }
 
   // ---- модификации ----
   const openModSlot = (i: number) => {
@@ -226,6 +276,31 @@ export default function App() {
     setCompanions((prev) =>
       prev.map((c) => (c.id === id ? { ...c, [field]: v } : c)),
     )
+
+  const ExtraIcon0 = extraSlot0 ? inventoryItemIcons[extraSlot0.name] : null
+  const ExtraIcon1 = extraSlot1 ? inventoryItemIcons[extraSlot1.name] : null
+
+  // Данные доп. слотов
+  const extraSlotsData = [
+    {
+      index: 0 as const,
+      enabled: extraEnabled0,
+      item: extraSlot0,
+      Icon: ExtraIcon0,
+      onToggle: handleToggle0,
+      onOpen: openExtra0,
+      onRemove: () => setExtraSlot0(null),
+    },
+    {
+      index: 1 as const,
+      enabled: extraEnabled1,
+      item: extraSlot1,
+      Icon: ExtraIcon1,
+      onToggle: handleToggle1,
+      onOpen: openExtra1,
+      onRemove: () => setExtraSlot1(null),
+    },
+  ]
 
   return (
     <ConfigProvider theme={{ algorithm: theme.darkAlgorithm }}>
@@ -281,12 +356,28 @@ export default function App() {
           {/* Инвентарь */}
           <S.Card>
             <S.SectionTitle>Инвентарь</S.SectionTitle>
+
+            {/* Свитчеры над сеткой */}
+            <div style={{ display: 'flex', gap: 16, marginBottom: 12 }}>
+              {extraSlotsData.map(({ index, enabled, onToggle }) => (
+                <Switch
+                  key={index}
+                  checked={enabled}
+                  onChange={onToggle}
+                  checkedChildren={`Доп. слот ${index + 1}`}
+                  unCheckedChildren={`Доп. слот ${index + 1}`}
+                />
+              ))}
+            </div>
+
+            {/* Единая сетка: 9 основных + 2 доп. ячейки */}
             <S.SlotsGrid $cols={3}>
+              {/* Основные слоты */}
               {inventory.map((item, i) => {
                 const Icon = item ? inventoryItemIcons[item.name] : null
                 return (
                   <S.Slot
-                    key={i}
+                    key={`inv-${i}`}
                     $empty={!item}
                     $color={item ? inventoryTypeColors[item.type] : undefined}
                     onClick={() => openInvSlot(i)}
@@ -309,6 +400,51 @@ export default function App() {
                   </S.Slot>
                 )
               })}
+
+              {/* Доп. слоты — прямо в той же сетке */}
+              {extraSlotsData.map(
+                ({ index, enabled, item, Icon, onOpen, onRemove }) => (
+                  <S.Slot
+                    key={`extra-${index}`}
+                    $empty={!item}
+                    $color={item ? inventoryTypeColors[item.type] : undefined}
+                    style={{
+                      opacity: enabled ? 1 : 0.35,
+                      pointerEvents: enabled ? 'auto' : 'none',
+                      cursor: enabled
+                        ? item
+                          ? 'default'
+                          : 'pointer'
+                        : 'not-allowed',
+                      // Визуально выделяем как «особые» слоты
+                      outline: enabled ? '2px dashed #555' : '2px dashed #333',
+                      outlineOffset: -2,
+                    }}
+                    onClick={onOpen}
+                  >
+                    {item && Icon ? (
+                      <>
+                        <DeleteOutlined
+                          className='slot-remove'
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            onRemove()
+                          }}
+                        />
+                        <Icon className='slot-icon' />
+                        <span className='slot-title'>{item.title}</span>
+                      </>
+                    ) : (
+                      <span
+                        className='slot-empty'
+                        style={{ opacity: enabled ? 1 : 0.4 }}
+                      >
+                        {enabled ? '+' : '—'}
+                      </span>
+                    )}
+                  </S.Slot>
+                ),
+              )}
             </S.SlotsGrid>
           </S.Card>
 
@@ -431,6 +567,11 @@ export default function App() {
           open={invModalOpen}
           onClose={() => setInvModalOpen(false)}
           onSelect={selectInv}
+        />
+        <AddInventoryModal
+          open={extraInvModalOpen}
+          onClose={() => setExtraInvModalOpen(false)}
+          onSelect={selectExtraInv}
         />
         <AddModificationModal
           open={modModalOpen}
