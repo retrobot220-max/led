@@ -228,7 +228,6 @@ export default function App() {
 
   const selectExtraInv = (item: InventoryItem) => {
     if (activeExtraSlot === 0) setExtraSlot0(item)
-    if (activeExtraSlot === 1) setExtraSlot1(item)
     setExtraInvModalOpen(false)
   }
 
