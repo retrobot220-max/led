@@ -226,19 +226,10 @@ export default function App() {
     setExtraEnabled0(checked)
     if (!checked) setExtraSlot0(null)
   }
-  const handleToggle1 = (checked: boolean) => {
-    setExtraEnabled1(checked)
-    if (!checked) setExtraSlot1(null)
-  }
 
   const openExtra0 = () => {
     if (!extraEnabled0 || extraSlot0) return
     setActiveExtraSlot(0)
-    setExtraInvModalOpen(true)
-  }
-  const openExtra1 = () => {
-    if (!extraEnabled1 || extraSlot1) return
-    setActiveExtraSlot(1)
     setExtraInvModalOpen(true)
   }
 
