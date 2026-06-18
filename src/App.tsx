@@ -26,6 +26,7 @@ import type { ModificationItem } from './models/modification'
 
 const INVENTORY_SLOTS = 9
 const MODIFICATION_SLOTS = 6
+const MAX_LEVEL = 6
 
 interface Companion {
   id: number
@@ -111,12 +112,14 @@ function PipCounter({
   max,
   color,
   onChange,
+  hint,
 }: {
   label: string
   value: number
   max: number
   color: string
   onChange: (v: number) => void
+  hint?: string
 }) {
   return (
     <S.CounterRow>
@@ -135,6 +138,9 @@ function PipCounter({
           />
         ))}
       </S.Pips>
+      {hint && (
+        <div style={{ fontSize: 12, color: '#888', marginTop: 4 }}>{hint}</div>
+      )}
     </S.CounterRow>
   )
 }
@@ -143,6 +149,7 @@ export default function App() {
   const [health, setHealth] = useLocalStorage('hero.health', 10)
   const [armor, setArmor] = useLocalStorage('hero.armor', 0)
   const [exp, setExp] = useLocalStorage('hero.exp', 0)
+  const [level, setLevel] = useLocalStorage('hero.level', 1)
   const [food, setFood] = useLocalStorage('hero.food', 0)
   const [money, setMoney] = useLocalStorage('hero.money', 0)
   const [junk, setJunk] = useLocalStorage('hero.junk', 0)
@@ -189,6 +196,9 @@ export default function App() {
 
   const [activeExtraSlot, setActiveExtraSlot] = useState<0 | 1 | null>(null)
   const [extraInvModalOpen, setExtraInvModalOpen] = useState(false)
+
+  // Опыт для следующего уровня: текущий_уровень * 10
+  const expForNextLevel = level < MAX_LEVEL ? level * 10 : null
 
   // ---- инвентарь ----
   const openInvSlot = (i: number) => {
@@ -278,9 +288,7 @@ export default function App() {
     )
 
   const ExtraIcon0 = extraSlot0 ? inventoryItemIcons[extraSlot0.name] : null
-  const ExtraIcon1 = extraSlot1 ? inventoryItemIcons[extraSlot1.name] : null
 
-  // Данные доп. слотов
   const extraSlotsData = [
     {
       index: 0 as const,
@@ -290,15 +298,6 @@ export default function App() {
       onToggle: handleToggle0,
       onOpen: openExtra0,
       onRemove: () => setExtraSlot0(null),
-    },
-    {
-      index: 1 as const,
-      enabled: extraEnabled1,
-      item: extraSlot1,
-      Icon: ExtraIcon1,
-      onToggle: handleToggle1,
-      onOpen: openExtra1,
-      onRemove: () => setExtraSlot1(null),
     },
   ]
 
@@ -321,12 +320,7 @@ export default function App() {
               steps={[1, 5]}
               onChange={setArmor}
             />
-            <Counter
-              label='Опыт'
-              value={exp}
-              steps={[1, 5]}
-              onChange={setExp}
-            />
+
             <Counter
               label='Сытость'
               value={food}
@@ -340,24 +334,28 @@ export default function App() {
               onChange={setStamina}
             />
             <Counter
-              label='Деньги'
-              value={money}
-              steps={[1, 5, 10]}
-              onChange={setMoney}
-            />
-            <Counter
-              label='Хлам'
-              value={junk}
+              label='Опыт'
+              value={exp}
               steps={[1, 5]}
-              onChange={setJunk}
+              onChange={setExp}
+            />
+            <PipCounter
+              label='Уровень'
+              value={level}
+              max={MAX_LEVEL}
+              color='#facc15'
+              onChange={(v) => setLevel(Math.max(1, v))}
+              hint={
+                expForNextLevel !== null
+                  ? `До следующего уровня: ${expForNextLevel} опыта`
+                  : 'Максимальный уровень'
+              }
             />
           </S.Card>
 
           {/* Инвентарь */}
           <S.Card>
             <S.SectionTitle>Инвентарь</S.SectionTitle>
-
-            {/* Свитчеры над сеткой */}
             <div style={{ display: 'flex', gap: 16, marginBottom: 12 }}>
               {extraSlotsData.map(({ index, enabled, onToggle }) => (
                 <Switch
@@ -369,10 +367,7 @@ export default function App() {
                 />
               ))}
             </div>
-
-            {/* Единая сетка: 9 основных + 2 доп. ячейки */}
             <S.SlotsGrid $cols={3}>
-              {/* Основные слоты */}
               {inventory.map((item, i) => {
                 const Icon = item ? inventoryItemIcons[item.name] : null
                 return (
@@ -400,8 +395,6 @@ export default function App() {
                   </S.Slot>
                 )
               })}
-
-              {/* Доп. слоты — прямо в той же сетке */}
               {extraSlotsData.map(
                 ({ index, enabled, item, Icon, onOpen, onRemove }) => (
                   <S.Slot
@@ -416,7 +409,6 @@ export default function App() {
                           ? 'default'
                           : 'pointer'
                         : 'not-allowed',
-                      // Визуально выделяем как «особые» слоты
                       outline: enabled ? '2px dashed #555' : '2px dashed #333',
                       outlineOffset: -2,
                     }}
@@ -446,6 +438,18 @@ export default function App() {
                 ),
               )}
             </S.SlotsGrid>
+            <Counter
+              label='Деньги'
+              value={money}
+              steps={[1, 5, 10]}
+              onChange={setMoney}
+            />
+            <Counter
+              label='Хлам'
+              value={junk}
+              steps={[1, 5]}
+              onChange={setJunk}
+            />
           </S.Card>
 
           {/* Модификации */}
