@@ -176,16 +176,9 @@ export default function App() {
     'hero.extraEnabled0',
     false,
   )
-  const [extraEnabled1, setExtraEnabled1] = useLocalStorage(
-    'hero.extraEnabled1',
-    false,
-  )
+
   const [extraSlot0, setExtraSlot0] = useLocalStorage<InventoryItem | null>(
     'hero.extraSlot0',
-    null,
-  )
-  const [extraSlot1, setExtraSlot1] = useLocalStorage<InventoryItem | null>(
-    'hero.extraSlot1',
     null,
   )
 
