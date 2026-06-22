@@ -59,9 +59,13 @@ export const CounterHead = styled.div`
   gap: 8px;
 `
 
-export const CounterLabel = styled.div`
-  font-size: 15px;
-  font-weight: 500;
+export const CounterLabel = styled.span`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #ccc;
+  min-width: 110px;
 `
 
 export const CounterControls = styled.div`

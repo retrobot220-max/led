@@ -27,4 +27,6 @@ export interface InventoryItem {
   title: string
   purchase_price: number | null
   sale_price: number | null
+  heal?: number
+  food?: number
 }
