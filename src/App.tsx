@@ -234,7 +234,6 @@ export function App() {
       return next
     })
 
-  // ---- компаньоны ----
   const addCompanion = () =>
     setCompanions((prev) => [
       ...prev,
@@ -280,7 +279,6 @@ export function App() {
   return (
     <S.Page>
       <S.Container>
-        {/* Шапка с кнопками */}
         <S.Card>
           <div
             style={{
@@ -298,7 +296,6 @@ export function App() {
                   width: 96,
                   height: 96,
                   borderRadius: 12,
-                  margin: -16,
                 }}
               />
             )}
@@ -310,7 +307,6 @@ export function App() {
                     fontWeight: 600,
                     fontSize: 18,
                     marginBottom: 2,
-                    marginLeft: 8,
                   }}
                 >
                   {selectedHero.name}
@@ -334,7 +330,6 @@ export function App() {
           </div>
         </S.Card>
 
-        {/* Основные счётчики */}
         <S.Card>
           <S.SectionTitle>Характеристики</S.SectionTitle>
           <Counter
