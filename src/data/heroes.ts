@@ -8,6 +8,9 @@ import hero6 from '../assets/heroes/hero6.png'
 import hero7 from '../assets/heroes/hero7.png'
 import hero8 from '../assets/heroes/hero8.png'
 import hero9 from '../assets/heroes/hero9.png'
+import hero10 from '../assets/heroes/hero10.png'
+import hero11 from '../assets/heroes/hero11.png'
+import hero12 from '../assets/heroes/hero12.png'
 
 type HeroItem = {
   id: number
@@ -22,6 +25,7 @@ type HeroItem = {
   trash: number
   access_anger?: boolean
   access_skulls?: boolean
+  quote: string
 }
 
 export const heroesCollections: HeroItem[] = [
@@ -42,6 +46,7 @@ export const heroesCollections: HeroItem[] = [
     satiety: 4,
     cash: 50,
     trash: 1,
+    quote: '«Я вижу будущее, недолго вам осталось»',
   },
   {
     id: 2,
@@ -60,6 +65,7 @@ export const heroesCollections: HeroItem[] = [
     satiety: 4,
     cash: 20,
     trash: 2,
+    quote: '«Выживает тот, кто слышит мир вокруг себя»',
   },
   {
     id: 3,
@@ -80,6 +86,7 @@ export const heroesCollections: HeroItem[] = [
     satiety: 4,
     cash: 100,
     trash: 0,
+    quote: '«Потешные ублюдки, делают вид, что не являются злом»',
   },
   {
     id: 4,
@@ -99,6 +106,7 @@ export const heroesCollections: HeroItem[] = [
     satiety: 4,
     cash: 200,
     trash: 4,
+    quote: '«Я переживал более худшее»',
   },
   {
     id: 5,
@@ -116,6 +124,7 @@ export const heroesCollections: HeroItem[] = [
     satiety: 4,
     cash: 50,
     trash: 1,
+    quote: '«Привет, дурилы! Готовы к расправе?!»',
   },
 
   {
@@ -135,6 +144,7 @@ export const heroesCollections: HeroItem[] = [
     satiety: 4,
     cash: 0,
     trash: 6,
+    quote: '«Польза, прочность, несущая смерть»',
   },
   {
     id: 7,
@@ -156,6 +166,7 @@ export const heroesCollections: HeroItem[] = [
     cash: 100,
     trash: 2,
     access_skulls: true,
+    quote: '«Я пришла за теми, кто удумал истребить нас»',
   },
   {
     id: 8,
@@ -177,6 +188,7 @@ export const heroesCollections: HeroItem[] = [
     cash: 150,
     trash: 0,
     access_anger: true,
+    quote: '*Прерывистое, неровное дыхание*',
   },
   {
     id: 9,
@@ -198,5 +210,72 @@ export const heroesCollections: HeroItem[] = [
     satiety: 4,
     cash: 0,
     trash: 0,
+    quote: '«あなたは無力です» [Вы беспомощны] *Громкий смех*',
+  },
+  {
+    id: 10,
+    name: 'Георгий',
+    health: 20,
+    armor: 20,
+    image: hero10,
+    inventory: [
+      InventoryNamespace.preserves,
+      InventoryNamespace.preserves,
+      InventoryNamespace.preserves,
+      InventoryNamespace.fac,
+      InventoryNamespace.stimulator,
+      InventoryNamespace.stimulator,
+      InventoryNamespace.bandage,
+      InventoryNamespace.bandage,
+    ],
+    movement: 4,
+    satiety: 4,
+    cash: 150,
+    trash: 0,
+    quote: '«Бог простит, я нет»',
+  },
+  {
+    id: 11,
+    name: 'Услада',
+    health: 30,
+    armor: 10,
+    image: hero11,
+    inventory: [
+      InventoryNamespace.preserves,
+      InventoryNamespace.preserves,
+      InventoryNamespace.smoke_grenade,
+      InventoryNamespace.fac,
+      InventoryNamespace.stimulator,
+      InventoryNamespace.stimulator,
+      InventoryNamespace.bandage,
+      InventoryNamespace.bandage,
+    ],
+    movement: 4,
+    satiety: 4,
+    cash: 100,
+    trash: 6,
+    quote: '«Люд земной, я помогу чем смогу»',
+  },
+  {
+    id: 12,
+    name: 'Морок',
+    health: 40,
+    armor: 0,
+    image: hero12,
+    inventory: [
+      InventoryNamespace.energy_bar,
+      InventoryNamespace.preserves,
+      InventoryNamespace.preserves,
+      InventoryNamespace.fac,
+      InventoryNamespace.stimulator,
+      InventoryNamespace.stimulator,
+      InventoryNamespace.bandage,
+      InventoryNamespace.bandage,
+    ],
+    movement: 4,
+    satiety: 4,
+    cash: 200,
+    trash: 0,
+    quote: '«Ты мой друг, я твой друг»',
   },
 ]

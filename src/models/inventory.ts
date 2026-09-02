@@ -29,4 +29,8 @@ export interface InventoryItem {
   sale_price: number | null
   heal?: number
   food?: number
+  stamina_bonus?: number
+  od_bonus?: number
+  armor_bonus?: number
+  description?: string
 }

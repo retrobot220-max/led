@@ -1,17 +1,20 @@
-// src/App.tsx
 import {
-  DeleteOutlined,
+  CloseOutlined,
   ReloadOutlined,
+  ShopOutlined,
   TeamOutlined,
   UserAddOutlined,
 } from '@ant-design/icons'
-import { App as AntdApp, Button, Collapse, Modal, Switch } from 'antd'
+import { App as AntdApp, Button, Collapse, Switch } from 'antd'
 import { useState } from 'react'
 import { AddInventoryModal } from './components/AddInventoryModal'
 import { AddModificationModal } from './components/AddModificationModal'
+import { AddDemoniacModal } from './components/AddDemoniacModal'
+import { HeroSelectModal } from './components/HeroSelectModal'
 import { Counter } from './components/Counter'
 import { PipCounter } from './components/PipCounter'
 import { heroesCollections } from './data/heroes'
+import { useHeroStore } from './store/heroStore'
 import {
   inventoryItemIcons,
   inventoryCollection,
@@ -21,10 +24,10 @@ import {
   modificationItemIcons,
   modificationTypeColors,
 } from './data/modifications'
+import { demoniacTrinketIcons } from './data/demoniacTrinkets'
 import type { InventoryItem } from './models/inventory'
 import type { ModificationItem } from './models/modification'
 import * as S from './styles'
-import { useLocalStorage } from './useLocalStorage'
 
 // ── иконки характеристик ──────────────────────────────────────────────────────
 import iconHp from './assets/common/hp.svg?react'
@@ -36,72 +39,69 @@ import iconExp from './assets/common/exp.svg?react'
 
 const INVENTORY_SLOTS = 9
 const MODIFICATION_SLOTS = 6
+const DEMONIAC_TRINKET_SLOTS = 4
 const MAX_LEVEL = 6
 
-interface Companion {
-  id: number
-  name: string
-  health: number
-  armor: number
-}
-
 export function App() {
-  const { modal } = AntdApp.useApp()
-  const [health, setHealth] = useLocalStorage('hero.health', 10)
-  const [armor, setArmor] = useLocalStorage('hero.armor', 0)
-  const [exp, setExp] = useLocalStorage('hero.exp', 0)
-  const [level, setLevel] = useLocalStorage('hero.level', 1)
-  const [food, setFood] = useLocalStorage('hero.food', 0)
-  const [money, setMoney] = useLocalStorage('hero.money', 0)
-  const [junk, setJunk] = useLocalStorage('hero.junk', 0)
-  const [stamina, setStamina] = useLocalStorage('hero.stamina', 0)
+  const { modal, message } = AntdApp.useApp()
 
-  const [inventory, setInventory] = useLocalStorage<(InventoryItem | null)[]>(
-    'hero.inventory',
-    Array(INVENTORY_SLOTS).fill(null),
-  )
-  const [mods, setMods] = useLocalStorage<(ModificationItem | null)[]>(
-    'hero.mods',
-    Array(MODIFICATION_SLOTS).fill(null),
-  )
-  const [companions, setCompanions] = useLocalStorage<Companion[]>(
-    'hero.companions',
-    [],
-  )
-
-  const [greenSkulls, setGreenSkulls] = useLocalStorage('hero.greenSkulls', 0)
-  const [blueSkulls, setBlueSkulls] = useLocalStorage('hero.blueSkulls', 0)
-  const [rage, setRage] = useLocalStorage('hero.rage', 0)
-
-  const [extraEnabled0, setExtraEnabled0] = useLocalStorage(
-    'hero.extraEnabled0',
-    false,
-  )
-  const [extraSlot0, setExtraSlot0] = useLocalStorage<InventoryItem | null>(
-    'hero.extraSlot0',
-    null,
-  )
-
-  const [selectedHeroId, setSelectedHeroId] = useLocalStorage<number | null>(
-    'hero.selectedHeroId',
-    null,
-  )
-  const [accessAnger, setAccessAnger] = useLocalStorage(
-    'hero.accessAnger',
-    false,
-  )
-  const [accessSkulls, setAccessSkulls] = useLocalStorage(
-    'hero.accessSkulls',
-    false,
-  )
+  const {
+    health,
+    setHealth,
+    armor: armor,
+    setArmor,
+    food,
+    setFood,
+    stamina,
+    setStamina,
+    exp,
+    setExp,
+    level,
+    setLevel,
+    money,
+    setMoney,
+    junk,
+    setJunk,
+    greenSkulls,
+    setGreenSkulls,
+    blueSkulls,
+    setBlueSkulls,
+    rage,
+    setRage,
+    inventory,
+    setInventory,
+    mods,
+    setMods,
+    setUpgradedMods,
+    demoniacTrinkets,
+    setDemoniacTrinkets,
+    companions,
+    setCompanions,
+    extraEnabled0,
+    setExtraEnabled0,
+    extraSlot0,
+    setExtraSlot0,
+    selectedHeroId,
+    setSelectedHeroId,
+    accessAnger,
+    setAccessAnger,
+    accessSkulls,
+    setAccessSkulls,
+    resetAll: storeResetAll,
+    selectHero: storeSelectHero,
+  } = useHeroStore()
 
   const [invModalOpen, setInvModalOpen] = useState(false)
   const [modModalOpen, setModModalOpen] = useState(false)
+  const [demoniacModalOpen, setDemoniacModalOpen] = useState(false)
   const [activeInvSlot, setActiveInvSlot] = useState<number | null>(null)
   const [activeModSlot, setActiveModSlot] = useState<number | null>(null)
   const [activeExtraSlot, setActiveExtraSlot] = useState<0 | 1 | null>(null)
   const [extraInvModalOpen, setExtraInvModalOpen] = useState(false)
   const [heroModalOpen, setHeroModalOpen] = useState(false)
+
+  const [invShopOpen, setInvShopOpen] = useState(false)
+  const [modShopOpen, setModShopOpen] = useState(false)
 
   const selectedHero =
     heroesCollections.find((h) => h.id === selectedHeroId) ?? null
@@ -116,27 +116,7 @@ export function App() {
       okText: 'Сбросить',
       cancelText: 'Отмена',
       okButtonProps: { danger: true },
-      onOk: () => {
-        setHealth(10)
-        setArmor(0)
-        setExp(0)
-        setLevel(1)
-        setFood(0)
-        setMoney(0)
-        setJunk(0)
-        setStamina(0)
-        setInventory(Array(INVENTORY_SLOTS).fill(null))
-        setMods(Array(MODIFICATION_SLOTS).fill(null))
-        setCompanions([])
-        setGreenSkulls(0)
-        setBlueSkulls(0)
-        setRage(0)
-        setExtraEnabled0(false)
-        setExtraSlot0(null)
-        setSelectedHeroId(null)
-        setAccessAnger(false)
-        setAccessSkulls(false)
-      },
+      onOk: () => storeResetAll(),
     })
   }
 
@@ -144,6 +124,7 @@ export function App() {
     const hero = heroesCollections.find((h) => h.id === heroId)
     if (!hero) return
 
+    // Apply hero presets
     setHealth(hero.health)
     setArmor(hero.armor)
     setFood(hero.satiety)
@@ -155,26 +136,34 @@ export function App() {
     setGreenSkulls(0)
     setBlueSkulls(0)
     setRage(0)
-    setMods(Array(MODIFICATION_SLOTS).fill(null))
-    setCompanions([])
+
+    // Reset mod slots and companions
+    setMods(() => Array(MODIFICATION_SLOTS).fill(null))
+    setUpgradedMods(() => [])
+    setDemoniacTrinkets(() => Array(DEMONIAC_TRINKET_SLOTS).fill(null))
+    setCompanions(() => [])
     setExtraEnabled0(false)
     setExtraSlot0(null)
 
+    // Build inventory from hero template
     const newInventory: (InventoryItem | null)[] =
       Array(INVENTORY_SLOTS).fill(null)
-    hero.inventory.forEach((invName, idx) => {
+    ;(hero.inventory as string[]).forEach((invName, idx) => {
       if (idx < INVENTORY_SLOTS) {
         const found =
           inventoryCollection.find((item) => item.name === invName) ?? null
         newInventory[idx] = found
       }
     })
-    setInventory(newInventory)
+    setInventory(() => [...newInventory])
 
     setAccessAnger(hero.access_anger ?? false)
     setAccessSkulls(hero.access_skulls ?? false)
     setSelectedHeroId(hero.id)
     setHeroModalOpen(false)
+
+    // Persist to Zustand
+    storeSelectHero(heroId)
   }
 
   // ---- инвентарь ----
@@ -197,6 +186,20 @@ export function App() {
       next[i] = null
       return next
     })
+
+  // ---- магазин предметов: добавить в первый свободный слот ----
+  const selectInvFromShop = (item: InventoryItem) => {
+    const freeIndex = inventory.findIndex((slot) => !slot)
+    if (freeIndex === -1) {
+      message.warning('Нет свободных слотов в инвентаре')
+      return
+    }
+    setInventory((prev) => {
+      const next = [...prev]
+      next[freeIndex] = item
+      return next
+    })
+  }
 
   // ---- доп. слоты ----
   const handleToggle0 = (checked: boolean) => {
@@ -233,6 +236,31 @@ export function App() {
       next[i] = null
       return next
     })
+
+  // ---- демонические безделушки ----
+  const openDemoniacSlot = () => {
+    setDemoniacModalOpen(true)
+  }
+  const removeDemoniac = (i: number) =>
+    setDemoniacTrinkets((prev) => {
+      const next = [...prev]
+      next[i] = null
+      return next
+    })
+
+  // ---- магазин модификаций: добавить в первый свободный слот ----
+  const selectModFromShop = (item: ModificationItem) => {
+    const freeIndex = mods.findIndex((slot) => !slot)
+    if (freeIndex === -1) {
+      message.warning('Нет свободных слотов для модификаций')
+      return
+    }
+    setMods((prev) => {
+      const next = [...prev]
+      next[freeIndex] = item
+      return next
+    })
+  }
 
   const addCompanion = () =>
     setCompanions((prev) => [
@@ -383,7 +411,16 @@ export function App() {
 
         {/* Инвентарь */}
         <S.Card>
-          <S.SectionTitle>Инвентарь</S.SectionTitle>
+          <S.SectionTitle>
+            Инвентарь
+            <Button
+              type='primary'
+              icon={<ShopOutlined />}
+              onClick={() => setInvShopOpen(true)}
+            >
+              Магазин предметов
+            </Button>
+          </S.SectionTitle>
           <div style={{ display: 'flex', gap: 16, marginBottom: 12 }}>
             {extraSlotsData.map(({ index, enabled, onToggle }) => (
               <Switch
@@ -407,8 +444,9 @@ export function App() {
                 >
                   {item && Icon ? (
                     <>
-                      <DeleteOutlined
+                      <CloseOutlined
                         className='slot-remove'
+                        style={{ fontSize: 20 }}
                         onClick={(e) => {
                           e.stopPropagation()
                           removeInv(i)
@@ -444,8 +482,9 @@ export function App() {
                 >
                   {item && Icon ? (
                     <>
-                      <DeleteOutlined
+                      <CloseOutlined
                         className='slot-remove'
+                        style={{ fontSize: 20 }}
                         onClick={(e) => {
                           e.stopPropagation()
                           onRemove()
@@ -482,7 +521,16 @@ export function App() {
 
         {/* Модификации */}
         <S.Card>
-          <S.SectionTitle>Модификации</S.SectionTitle>
+          <S.SectionTitle>
+            Модификации
+            <Button
+              type='primary'
+              icon={<ShopOutlined />}
+              onClick={() => setModShopOpen(true)}
+            >
+              Магазин модификаций
+            </Button>
+          </S.SectionTitle>
           <S.SlotsGrid $cols={3}>
             {mods.map((item, i) => {
               const Icon = item ? modificationItemIcons[item.name] : null
@@ -495,11 +543,47 @@ export function App() {
                 >
                   {item && Icon ? (
                     <>
-                      <DeleteOutlined
+                      <CloseOutlined
                         className='slot-remove'
+                        style={{ fontSize: 20 }}
                         onClick={(e) => {
                           e.stopPropagation()
                           removeMod(i)
+                        }}
+                      />
+                      <Icon className='slot-icon' />
+                      <span className='slot-title'>{item.title}</span>
+                    </>
+                  ) : (
+                    <span className='slot-empty'>+</span>
+                  )}
+                </S.Slot>
+              )
+            })}
+          </S.SlotsGrid>
+        </S.Card>
+
+        {/* Демонические безделушки */}
+        <S.Card>
+          <S.SectionTitle>Демонические безделушки</S.SectionTitle>
+          <S.SlotsGrid $cols={4}>
+            {demoniacTrinkets.map((item, i) => {
+              const Icon = item ? demoniacTrinketIcons[item.name] : null
+              return (
+                <S.Slot
+                  key={`demoniac-${i}`}
+                  $empty={!item}
+                  $color={item ? modificationTypeColors[item.type] : undefined}
+                  onClick={() => openDemoniacSlot()}
+                >
+                  {item && Icon ? (
+                    <>
+                      <CloseOutlined
+                        className='slot-remove'
+                        style={{ fontSize: 20 }}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          removeDemoniac(i)
                         }}
                       />
                       <Icon className='slot-icon' />
@@ -536,7 +620,7 @@ export function App() {
                 <Button
                   danger
                   size='small'
-                  icon={<DeleteOutlined />}
+                  icon={<CloseOutlined />}
                   onClick={() => removeCompanion(c.id)}
                 />
               </S.FlexBetween>
@@ -603,84 +687,12 @@ export function App() {
         )}
       </S.Container>
 
-      {/* Модалка выбора героя */}
-      <Modal
+      <HeroSelectModal
         open={heroModalOpen}
-        onCancel={() => setHeroModalOpen(false)}
-        footer={null}
-        title='Выбрать героя'
-        width={720}
-      >
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
-            gap: 16,
-            padding: '8px 0',
-          }}
-        >
-          {heroesCollections.map((hero) => (
-            <div
-              key={hero.id}
-              onClick={() => handleSelectHero(hero.id)}
-              style={{
-                border:
-                  selectedHeroId === hero.id
-                    ? '2px solid #1677ff'
-                    : '2px solid #333',
-                borderRadius: 10,
-                padding: 12,
-                cursor: 'pointer',
-                background: selectedHeroId === hero.id ? '#111d2c' : '#1a1a1a',
-                transition: 'border-color 0.2s, background 0.2s',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: 8,
-              }}
-            >
-              <img
-                src={hero.image}
-                alt={hero.name}
-                style={{
-                  width: 80,
-                  height: 80,
-                  objectFit: 'cover',
-                  borderRadius: 8,
-                  border: '1px solid #444',
-                }}
-              />
-              <div
-                style={{ fontWeight: 600, fontSize: 14, textAlign: 'center' }}
-              >
-                {hero.name}
-              </div>
-              <div
-                style={{
-                  fontSize: 12,
-                  color: '#aaa',
-                  lineHeight: 1.6,
-                  width: '100%',
-                }}
-              >
-                <div>❤️ Здоровье: {hero.health}</div>
-                <div>🛡️ Броня: {hero.armor}</div>
-                <div>🥾 Движение: {hero.movement}</div>
-                <div>🍖 Сытость: {hero.satiety}</div>
-                <div>💰 Деньги: {hero.cash}</div>
-                <div>🗑️ Хлам: {hero.trash}</div>
-                {hero.access_skulls && (
-                  <div style={{ color: '#4ade80' }}>💀 Черепки</div>
-                )}
-                {hero.access_anger && (
-                  <div style={{ color: '#f87171' }}>🔥 Гнев</div>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      </Modal>
-
+        onClose={() => setHeroModalOpen(false)}
+        onSelectHero={handleSelectHero}
+        selectedHeroId={selectedHeroId || undefined}
+      />
       <AddInventoryModal
         open={invModalOpen}
         onClose={() => setInvModalOpen(false)}
@@ -695,6 +707,21 @@ export function App() {
         open={modModalOpen}
         onClose={() => setModModalOpen(false)}
         onSelect={selectMod}
+      />
+      <AddDemoniacModal
+        open={demoniacModalOpen}
+        onClose={() => setDemoniacModalOpen(false)}
+      />
+
+      <AddInventoryModal
+        open={invShopOpen}
+        onClose={() => setInvShopOpen(false)}
+        onSelect={selectInvFromShop}
+      />
+      <AddModificationModal
+        open={modShopOpen}
+        onClose={() => setModShopOpen(false)}
+        onSelect={selectModFromShop}
       />
     </S.Page>
   )
