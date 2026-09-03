@@ -33,7 +33,7 @@ export const heroesCollections: HeroItem[] = [
     id: 1,
     name: 'Вещий',
     health: 20,
-    armor: 10,
+    armor: 15,
     image: hero1,
     inventory: [
       InventoryNamespace.preserves,
@@ -71,7 +71,7 @@ export const heroesCollections: HeroItem[] = [
     id: 3,
     name: 'Ловуша',
     health: 20,
-    armor: 5,
+    armor: 10,
     image: hero3,
     inventory: [
       InventoryNamespace.preserves,
@@ -92,7 +92,7 @@ export const heroesCollections: HeroItem[] = [
     id: 4,
     name: 'Техносолдат',
     health: 20,
-    armor: 15,
+    armor: 20,
     image: hero4,
     inventory: [
       InventoryNamespace.preserves,
@@ -149,8 +149,8 @@ export const heroesCollections: HeroItem[] = [
   {
     id: 7,
     name: 'Девочка яга',
-    health: 20,
-    armor: 20,
+    health: 25,
+    armor: 10,
     image: hero7,
     inventory: [
       InventoryNamespace.preserves,
@@ -171,8 +171,8 @@ export const heroesCollections: HeroItem[] = [
   {
     id: 8,
     name: 'Богояр',
-    health: 20,
-    armor: 20,
+    health: 25,
+    armor: 15,
     image: hero8,
     inventory: [
       InventoryNamespace.preserves,
@@ -193,7 +193,7 @@ export const heroesCollections: HeroItem[] = [
   {
     id: 9,
     name: 'Хидео',
-    health: 30,
+    health: 40,
     armor: 0,
     image: hero9,
     inventory: [
